@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Reactions</title>
+  <style>
+    body {
+      background: #0f0f0f;
+      color: white;
+      font-family: Arial;
+      text-align: center;
+      padding-top: 100px;
+    }
+
+    .btn {
+      font-size: 40px;
+      margin: 15px;
+      cursor: pointer;
+    }
+
+    .count {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Оставь реакцию</h1>
+
+<div>
+  <span class="btn" onclick="send('like')">👍</span>
+  <span class="btn" onclick="send('love')">❤️</span>
+  <span class="btn" onclick="send('lol')">😂</span>
+</div>
+
+<div class="count">
+  👍 <span id="like">0</span> |
+  ❤️ <span id="love">0</span> |
+  😂 <span id="lol">0</span>
+</div>
+
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbyx75ubc-JrYcJla4nvWzm40WW7_82C524lrSE4phaW8ViBf6WNkQexS5cT_0iJjO6O3g/exec";
+
+  async function load() {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+
+    document.getElementById("like").innerText = data.like || 0;
+    document.getElementById("love").innerText = data.love || 0;
+    document.getElementById("lol").innerText = data.lol || 0;
+  }
+
+  async function send(type) {
+    await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({ type }),
+    });
+
+    load(); // обновляем после клика
+  }
+
+  load();
+</script>
+
+</body>
+</html>
