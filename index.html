@@ -16,6 +16,11 @@
       font-size: 40px;
       margin: 15px;
       cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn:hover {
+      transform: scale(1.2);
     }
 
     .count {
@@ -30,37 +35,44 @@
 
 <div>
   <span class="btn" onclick="send('like')">👍</span>
-  <span class="btn" onclick="send('love')">❤️</span>
+  <span class="btn" onclick="send('sad')">😢</span>
   <span class="btn" onclick="send('lol')">😂</span>
 </div>
 
 <div class="count">
   👍 <span id="like">0</span> |
-  ❤️ <span id="love">0</span> |
+  😢 <span id="sad">0</span> |
   😂 <span id="lol">0</span>
 </div>
 
 <script>
   const API_URL = "https://script.google.com/macros/s/AKfycbyx75ubc-JrYcJla4nvWzm40WW7_82C524lrSE4phaW8ViBf6WNkQexS5cT_0iJjO6O3g/exec";
 
+  let lastData = {};
+
   async function load() {
     const res = await fetch(API_URL);
     const data = await res.json();
 
-    document.getElementById("like").innerText = data.like || 0;
-    document.getElementById("love").innerText = data.love || 0;
-    document.getElementById("lol").innerText = data.lol || 0;
+    // обновляем только если изменилось
+    if (JSON.stringify(data) !== JSON.stringify(lastData)) {
+      document.getElementById("like").innerText = data.like || 0;
+      document.getElementById("sad").innerText = data.sad || 0;
+      document.getElementById("lol").innerText = data.lol || 0;
+
+      lastData = data;
+    }
   }
 
   async function send(type) {
-    await fetch(API_URL, {
-      method: "POST",
-      body: JSON.stringify({ type }),
-    });
-
-    load(); // обновляем после клика
+    await fetch(API_URL + "?type=" + type);
+    load();
   }
 
+  // 🚀 автообновление каждые 2 секунды
+  setInterval(load, 2000);
+
+  // первый запуск
   load();
 </script>
 
